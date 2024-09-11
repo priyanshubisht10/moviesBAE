@@ -27,7 +27,7 @@ export default function App() {
     async function fetchMovies() {
       setIsLoading(true)
       try {
-        const res = await fetch(`http://www.omdbapi.com/?apikey=${process.env.REACT_APP_OMDB_API_KEY}&s=${query}`,
+        const res = await fetch(`https://www.omdbapi.com/?apikey=${process.env.REACT_APP_OMDB_API_KEY}&s=${query}`,
           { signal: controller.signal });
         if (!res.ok) {
           throw new Error("Something went wrong!")
