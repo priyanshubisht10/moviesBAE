@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Loader from "../commons/Loader";
 import StarRating from "../StarRating";
+import { useKey } from "../../hooks/useKey";
 
 export default function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
    const [movie, setMovie] = useState({});
@@ -20,8 +21,6 @@ export default function MovieDetails({ selectedId, onCloseMovie, onAddWatched, w
          const data = await res.json();
          setMovie(data);
          setIsLoading(false);
-
-         // console.log(data);
       }
       getMovieDetails(selectedId);
    }, [selectedId]);
@@ -35,17 +34,7 @@ export default function MovieDetails({ selectedId, onCloseMovie, onAddWatched, w
       }
    }, [movie])
 
-   useEffect(function () {
-      function callback(e) {
-         if (e.code === 'Escape') {
-            onCloseMovie();
-         }
-      }
-      document.addEventListener('keydown', callback);
-      return function () {
-         document.removeEventListener('keydown', callback);
-      }
-   }, [onCloseMovie]);
+   useKey('Escape', onCloseMovie);
 
    function handleAdd(movie) {
       const newMovie = {

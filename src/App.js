@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useMovies } from "./hooks/useMovies";
+import { useState } from "react";
 import Navbar from "./components/commons/Navbar";
 import Logo from "./components/commons/Logo";
 import Search from "./components/commons/Search";
@@ -11,46 +12,15 @@ import ErrorMessage from "./components/commons/ErrorMessage";
 import MovieDetails from "./components/movies/MovieDetails";
 import WatchedSummary from "./components/movies/WatchedSummary";
 import WatchedMoviesList from "./components/movies/WatchedMoviesList";
-
+import { useLocalStorageState } from "./hooks/useLocalStorageState";
 
 export default function App() {
-
-  const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
   const [query, setQuery] = useState('');
   const [selectedId, setSelectedId] = useState('');
 
-  useEffect(function () {
-    const controller = new AbortController();
-    async function fetchMovies() {
-      setIsLoading(true)
-      try {
-        const res = await fetch(`https://www.omdbapi.com/?apikey=${process.env.REACT_APP_OMDB_API_KEY}&s=${query}`,
-          { signal: controller.signal });
-        if (!res.ok) {
-          throw new Error("Something went wrong!")
-        }
-        const data = await res.json();
-        setMovies(data.Search)
-        setError("");
-      } catch (e) {
-        console.log(e.message);
-        if (e.name !== 'AbortError') {
-          setError(e.message);
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    }
+  const { movies, isLoading, error } = useMovies(query);
 
-    fetchMovies();
-    return function () {
-      controller.abort()
-    };
-
-  }, [query]);
+  const [watched, setWatched] = useLocalStorageState([], 'watched');
 
   function handleChangeQuery(q) {
     setQuery(q)
@@ -62,7 +32,7 @@ export default function App() {
   }
 
   function handleOnCloseMovie() {
-    setSelectedId('')
+    setSelectedId("")
   }
 
   function handleAddWatched(newWatchedMovie) {
